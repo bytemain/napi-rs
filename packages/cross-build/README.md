@@ -1,4 +1,4 @@
-# @aspect-build/rust-cross-build
+# @napi-rs/cross-build
 
 Cross-compile Rust projects without Docker.
 
@@ -16,11 +16,11 @@ This package extracts the cross-compilation logic from `@napi-rs/cli` into a sta
 ## Installation
 
 ```bash
-npm install @aspect-build/rust-cross-build
+npm install @napi-rs/cross-build
 # or
-yarn add @aspect-build/rust-cross-build
+yarn add @napi-rs/cross-build
 # or
-pnpm add @aspect-build/rust-cross-build
+pnpm add @napi-rs/cross-build
 ```
 
 ## Usage
@@ -28,7 +28,7 @@ pnpm add @aspect-build/rust-cross-build
 ### Basic Build
 
 ```typescript
-import { build } from '@aspect-build/rust-cross-build'
+import { build } from '@napi-rs/cross-build'
 
 // Cross-compile for Linux ARM64
 const result = await build({
@@ -46,7 +46,7 @@ console.log('Environment variables used:', result.envs)
 If you want to get the environment variables needed for cross-compilation without actually building, you can use `getCrossCompileEnv`:
 
 ```typescript
-import { getCrossCompileEnv } from '@aspect-build/rust-cross-build'
+import { getCrossCompileEnv } from '@napi-rs/cross-build'
 
 const env = getCrossCompileEnv({
   target: 'aarch64-unknown-linux-gnu',
@@ -65,7 +65,7 @@ console.log(env)
 ### Parse Target Triple
 
 ```typescript
-import { parseTriple } from '@aspect-build/rust-cross-build'
+import { parseTriple } from '@napi-rs/cross-build'
 
 const target = parseTriple('aarch64-unknown-linux-gnu')
 console.log(target)

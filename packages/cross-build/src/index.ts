@@ -1,11 +1,11 @@
 /**
- * @aspect-build/rust-cross-build
+ * @napi-rs/cross-build
  *
  * Cross-compile Rust projects without Docker
  *
  * @example
  * ```ts
- * import { build, getCrossCompileEnv } from '@aspect-build/rust-cross-build'
+ * import { build, getCrossCompileEnv } from '@napi-rs/cross-build'
  *
  * // Cross-compile for Linux ARM64
  * const result = await build({

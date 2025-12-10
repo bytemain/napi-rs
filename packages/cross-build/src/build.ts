@@ -120,7 +120,7 @@ export interface CrossBuildResult {
  *
  * @example
  * ```ts
- * import { build } from '@aspect-build/rust-cross-build'
+ * import { build } from '@napi-rs/cross-build'
  *
  * const result = await build({
  *   target: 'aarch64-unknown-linux-gnu',
@@ -141,7 +141,7 @@ export async function build(
  *
  * @example
  * ```ts
- * import { getCrossCompileEnv } from '@aspect-build/rust-cross-build'
+ * import { getCrossCompileEnv } from '@napi-rs/cross-build'
  *
  * const env = getCrossCompileEnv({
  *   target: 'aarch64-unknown-linux-gnu',

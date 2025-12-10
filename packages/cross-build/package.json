@@ -1,5 +1,5 @@
 {
-  "name": "@aspect-build/rust-cross-build",
+  "name": "@napi-rs/cross-build",
   "version": "1.0.0",
   "description": "Cross-compile Rust projects without Docker",
   "author": "LongYinan <lynweklm@gmail.com>",

@@ -7,7 +7,7 @@ import { parse, join, resolve } from 'node:path'
 import {
   getCrossCompileEnv,
   tryInstallCargoBinary,
-} from '@aspect-build/rust-cross-build'
+} from '@napi-rs/cross-build'
 import * as colors from 'colorette'
 
 import type { BuildOptions as RawBuildOptions } from '../def/build.js'
