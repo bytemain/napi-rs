@@ -60,6 +60,7 @@
     "url": "https://github.com/napi-rs/napi-rs/issues"
   },
   "dependencies": {
+    "@napi-rs/cross-build": "workspace:*",
     "@inquirer/prompts": "^8.0.0",
     "@napi-rs/cross-toolchain": "^1.0.3",
     "@napi-rs/wasm-tools": "^1.0.1",
