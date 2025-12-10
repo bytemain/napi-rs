@@ -209,10 +209,13 @@ class Builder {
         target: this.target.triple,
         useNapiCross: true,
       })
-      // Merge the cross-compile environment variables
-      Object.entries(crossEnvs).forEach(([key, value]) => {
-        this.setEnvIfNotExists(key, value)
-      })
+      // Merge the cross-compile environment variables (only if not already set)
+      Object.assign(
+        this.envs,
+        Object.fromEntries(
+          Object.entries(crossEnvs).filter(([key]) => !process.env[key]),
+        ),
+      )
     } catch (e) {
       debug.warn('Pick cross toolchain failed', e as Error)
       // ignore, do nothing
