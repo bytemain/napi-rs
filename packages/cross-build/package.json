@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Cross-compile Rust projects without Docker",
   "author": "LongYinan <lynweklm@gmail.com>",
-  "homepage": "https://github.com/aspect-build/rust-cross-build",
+  "homepage": "https://github.com/napi-rs/napi-rs/tree/main/packages/cross-build",
   "license": "MIT",
   "type": "module",
   "engines": {
