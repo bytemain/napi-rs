@@ -1,10 +1,13 @@
 import { spawn } from 'node:child_process'
 import { createHash } from 'node:crypto'
-import { existsSync, mkdirSync, rmSync } from 'node:fs'
+import { existsSync, rmSync } from 'node:fs'
 import { createRequire } from 'node:module'
-import { homedir } from 'node:os'
 import { parse, join, resolve } from 'node:path'
 
+import {
+  getCrossCompileEnv,
+  tryInstallCargoBinary,
+} from '@aspect-build/rust-cross-build'
 import * as colors from 'colorette'
 
 import type { BuildOptions as RawBuildOptions } from '../def/build.js'
@@ -26,7 +29,6 @@ import {
   readNapiConfig,
   type Target,
   targetToEnvVar,
-  tryInstallCargoBinary,
   unlinkAsync,
   writeFileAsync,
   dirExistsAsync,
@@ -202,83 +204,15 @@ class Builder {
     }
 
     try {
-      const { version, download } = require('@napi-rs/cross-toolchain')
-
-      const alias: Record<string, string> = {
-        's390x-unknown-linux-gnu': 's390x-ibm-linux-gnu',
-      }
-
-      const toolchainPath = join(
-        homedir(),
-        '.napi-rs',
-        'cross-toolchain',
-        version,
-        this.target.triple,
-      )
-      mkdirSync(toolchainPath, { recursive: true })
-      if (existsSync(join(toolchainPath, 'package.json'))) {
-        debug(`Toolchain ${toolchainPath} exists, skip extracting`)
-      } else {
-        const tarArchive = download(process.arch, this.target.triple)
-        tarArchive.unpack(toolchainPath)
-      }
-      const upperCaseTarget = targetToEnvVar(this.target.triple)
-      const crossTargetName = alias[this.target.triple] ?? this.target.triple
-      const linkerEnv = `CARGO_TARGET_${upperCaseTarget}_LINKER`
-      this.setEnvIfNotExists(
-        linkerEnv,
-        join(toolchainPath, 'bin', `${crossTargetName}-gcc`),
-      )
-      this.setEnvIfNotExists(
-        'TARGET_SYSROOT',
-        join(toolchainPath, crossTargetName, 'sysroot'),
-      )
-      this.setEnvIfNotExists(
-        'TARGET_AR',
-        join(toolchainPath, 'bin', `${crossTargetName}-ar`),
-      )
-      this.setEnvIfNotExists(
-        'TARGET_RANLIB',
-        join(toolchainPath, 'bin', `${crossTargetName}-ranlib`),
-      )
-      this.setEnvIfNotExists(
-        'TARGET_READELF',
-        join(toolchainPath, 'bin', `${crossTargetName}-readelf`),
-      )
-      this.setEnvIfNotExists(
-        'TARGET_C_INCLUDE_PATH',
-        join(toolchainPath, crossTargetName, 'sysroot', 'usr', 'include/'),
-      )
-      this.setEnvIfNotExists(
-        'TARGET_CC',
-        join(toolchainPath, 'bin', `${crossTargetName}-gcc`),
-      )
-      this.setEnvIfNotExists(
-        'TARGET_CXX',
-        join(toolchainPath, 'bin', `${crossTargetName}-g++`),
-      )
-      this.setEnvIfNotExists(
-        'BINDGEN_EXTRA_CLANG_ARGS',
-        `--sysroot=${this.envs.TARGET_SYSROOT}}`,
-      )
-
-      if (
-        process.env.TARGET_CC?.startsWith('clang') ||
-        (process.env.CC?.startsWith('clang') && !process.env.TARGET_CC)
-      ) {
-        const TARGET_CFLAGS = process.env.TARGET_CFLAGS ?? ''
-        this.envs.TARGET_CFLAGS = `--sysroot=${this.envs.TARGET_SYSROOT} --gcc-toolchain=${toolchainPath} ${TARGET_CFLAGS}`
-      }
-      if (
-        (process.env.CXX?.startsWith('clang++') && !process.env.TARGET_CXX) ||
-        process.env.TARGET_CXX?.startsWith('clang++')
-      ) {
-        const TARGET_CXXFLAGS = process.env.TARGET_CXXFLAGS ?? ''
-        this.envs.TARGET_CXXFLAGS = `--sysroot=${this.envs.TARGET_SYSROOT} --gcc-toolchain=${toolchainPath} ${TARGET_CXXFLAGS}`
-      }
-      this.envs.PATH = this.envs.PATH
-        ? `${toolchainPath}/bin:${this.envs.PATH}:${process.env.PATH}`
-        : `${toolchainPath}/bin:${process.env.PATH}`
+      // Use the cross-build package to get the environment variables
+      const crossEnvs = getCrossCompileEnv({
+        target: this.target.triple,
+        useNapiCross: true,
+      })
+      // Merge the cross-compile environment variables
+      Object.entries(crossEnvs).forEach(([key, value]) => {
+        this.setEnvIfNotExists(key, value)
+      })
     } catch (e) {
       debug.warn('Pick cross toolchain failed', e as Error)
       // ignore, do nothing
